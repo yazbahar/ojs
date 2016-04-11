@@ -58,9 +58,9 @@ class JournalIndexController extends Controller
 
         $actionColumn = new ActionsColumn("actions", 'actions');
 
-        $rowAction[] = $gridAction->showAction('ojs_journal_index_show', ['id', 'journalId' => $journal->getId()]);
-        $rowAction[] = $gridAction->editAction('ojs_journal_index_edit', ['id', 'journalId' => $journal->getId()]);
-        $rowAction[] = $gridAction->deleteAction('ojs_journal_index_delete', ['id', 'journalId' => $journal->getId()]);
+        $rowAction[] = $gridAction->showAction('ojs_journal_index_show', ['id']);
+        $rowAction[] = $gridAction->editAction('ojs_journal_index_edit', ['id']);
+        $rowAction[] = $gridAction->deleteAction('ojs_journal_index_delete', ['id']);
 
         $actionColumn->setRowActions($rowAction);
         $grid->addColumn($actionColumn);
@@ -114,7 +114,7 @@ class JournalIndexController extends Controller
             return $this->redirect(
                 $this->generateUrl(
                     'ojs_journal_index_show',
-                    array('id' => $entity->getId(), 'journalId' => $journal->getId())
+                    array('id' => $entity->getId())
                 )
             );
         }
@@ -144,8 +144,7 @@ class JournalIndexController extends Controller
             $entity,
             array(
                 'action' => $this->generateUrl(
-                    'ojs_journal_index_create',
-                    ['journalId' => $entity->getJournal()->getId()]
+                    'ojs_journal_index_create'
                 ),
                 'method' => 'POST'
             )
@@ -245,7 +244,7 @@ class JournalIndexController extends Controller
             array(
                 'action' => $this->generateUrl(
                     'ojs_journal_index_update',
-                    array('id' => $entity->getId(), 'journalId' => $entity->getJournal()->getId())
+                    array('id' => $entity->getId())
                 ),
                 'method' => 'PUT'
             )
@@ -294,7 +293,7 @@ class JournalIndexController extends Controller
             return $this->redirect(
                 $this->generateUrl(
                     'ojs_journal_index_edit',
-                    array('id' => $entity->getId(), 'journalId' => $journal->getId())
+                    array('id' => $entity->getId())
                 )
             );
         }
@@ -342,6 +341,6 @@ class JournalIndexController extends Controller
 
         $this->successFlashBag('successful.remove');
 
-        return $this->redirectToRoute('ojs_journal_index_index', ['journalId' => $journal->getId()]);
+        return $this->redirectToRoute('ojs_journal_index_index');
     }
 }

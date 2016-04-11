@@ -38,9 +38,9 @@ class JournalThemeController extends Controller
 
         $actionColumn = new ActionsColumn("actions", 'actions');
 
-        $rowAction[] = $gridAction->showAction('ojs_journal_theme_show', ['id', 'journalId' => $journal->getId()]);
-        $rowAction[] = $gridAction->editAction('ojs_journal_theme_edit', ['id', 'journalId' => $journal->getId()]);
-        $rowAction[] = $gridAction->deleteAction('ojs_journal_theme_delete', ['id', 'journalId' => $journal->getId()]);
+        $rowAction[] = $gridAction->showAction('ojs_journal_theme_show', ['id']);
+        $rowAction[] = $gridAction->editAction('ojs_journal_theme_edit', ['id']);
+        $rowAction[] = $gridAction->deleteAction('ojs_journal_theme_delete', ['id']);
 
         $actionColumn->setRowActions($rowAction);
         $grid->addColumn($actionColumn);
@@ -73,7 +73,7 @@ class JournalThemeController extends Controller
             $em->persist($entity);
             $em->flush();
             $this->successFlashBag('successful.create');
-            return $this->redirectToRoute('ojs_journal_theme_show', ['id' => $entity->getId(), 'journalId' => $journal->getId()]);
+            return $this->redirectToRoute('ojs_journal_theme_show', ['id' => $entity->getId()]);
         }
 
         return $this->render(
@@ -98,7 +98,7 @@ class JournalThemeController extends Controller
             new JournalThemeType(),
             $entity,
             array(
-                'action' => $this->generateUrl('ojs_journal_theme_create', ['journalId' => $entity->getJournal()->getId()]),
+                'action' => $this->generateUrl('ojs_journal_theme_create'),
                 'method' => 'POST',
             )
         );
@@ -205,7 +205,7 @@ class JournalThemeController extends Controller
             new JournalThemeType(),
             $entity,
             array(
-                'action' => $this->generateUrl('ojs_journal_theme_update', array('id' => $entity->getId(), 'journalId' => $entity->getJournal()->getId())),
+                'action' => $this->generateUrl('ojs_journal_theme_update', array('id' => $entity->getId())),
                 'method' => 'PUT',
             )
         );
@@ -241,7 +241,7 @@ class JournalThemeController extends Controller
         if ($editForm->isValid()) {
             $em->flush();
             $this->successFlashBag('successful.update');
-            return $this->redirectToRoute('ojs_journal_theme_edit', ['id' => $entity->getId(), 'journalId' => $journal->getId()]);
+            return $this->redirectToRoute('ojs_journal_theme_edit', ['id' => $entity->getId()]);
         }
 
         return $this->render(
@@ -282,7 +282,7 @@ class JournalThemeController extends Controller
         $em->remove($entity);
         $em->flush();
         $this->successFlashBag('successful.remove');
-        return $this->redirectToRoute('ojs_journal_theme_index', ['journalId' => $journal->getId()]);
+        return $this->redirectToRoute('ojs_journal_theme_index');
     }
 
     /**
@@ -324,12 +324,10 @@ class JournalThemeController extends Controller
         $actionColumn1 = new ActionsColumn("actions", 'actions');
         $rowAction1[] = $gridAction1->cloneThemeAction('ojs_journal_global_theme_clone', [
             'id',
-            'journalId' => $journal->getId(),
             'type' => 'global'
         ]);
         $rowAction1[] = $gridAction1->cloneThemeAction('ojs_journal_global_theme_clone', [
             'id',
-            'journalId' => $journal->getId(),
             'type' => 'global',
             'use'
         ], null, [
@@ -351,12 +349,10 @@ class JournalThemeController extends Controller
         $actionColumn2 = new ActionsColumn("actions", 'actions');
         $rowAction2[] = $gridAction2->cloneThemeAction('ojs_journal_global_theme_clone', [
             'id',
-            'journalId' => $journal->getId(),
             'type' => 'journal'
         ]);
         $rowAction2[] = $gridAction2->cloneThemeAction('ojs_journal_global_theme_clone', [
             'id',
-            'journalId' => $journal->getId(),
             'type' => 'journal',
             'use'
         ], null, [
@@ -430,8 +426,6 @@ class JournalThemeController extends Controller
         }else{
             $this->successFlashBag('successfully.cloned.global.theme');
         }
-        return $this->redirectToRoute('ojs_journal_theme_index', [
-            'journalId' => $journal->getId()
-        ]);
+        return $this->redirectToRoute('ojs_journal_theme_index');
     }
 }

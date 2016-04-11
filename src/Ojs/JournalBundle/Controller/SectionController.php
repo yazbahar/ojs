@@ -7,7 +7,6 @@ use APY\DataGridBundle\Grid\Row;
 use APY\DataGridBundle\Grid\Source\Entity;
 use Doctrine\ORM\Query;
 use Ojs\CoreBundle\Controller\OjsController as Controller;
-use Ojs\JournalBundle\Entity\Issue;
 use Ojs\JournalBundle\Entity\Journal;
 use Ojs\JournalBundle\Entity\Section;
 use Ojs\JournalBundle\Event\JournalEvent;
@@ -65,17 +64,17 @@ class SectionController extends Controller
 
         $actionColumn = new ActionsColumn("actions", 'actions');
 
-        $rowAction[] = $gridAction->showAction('ojs_journal_section_show', ['id', 'journalId' => $journal->getId()]);
+        $rowAction[] = $gridAction->showAction('ojs_journal_section_show', ['id']);
         if ($this->isGranted('EDIT', $this->get('ojs.journal_service')->getSelectedJournal(), 'sections')) {
             $rowAction[] = $gridAction->editAction(
                 'ojs_journal_section_edit',
-                ['id', 'journalId' => $journal->getId()]
+                ['id']
             );
         }
         if ($this->isGranted('DELETE', $this->get('ojs.journal_service')->getSelectedJournal(), 'sections')) {
             $rowAction[] = $gridAction->deleteAction(
                 'ojs_journal_section_delete',
-                ['id', 'journalId' => $journal->getId()]
+                ['id']
             );
         }
 
@@ -106,7 +105,7 @@ class SectionController extends Controller
         }
 
         $entity = new Section();
-        $form = $this->createCreateForm($entity, $journal);
+        $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
         if ($form->isValid()) {
             $entity->setJournal($journal);
@@ -124,13 +123,7 @@ class SectionController extends Controller
 
             $this->successFlashBag('successful.create');
 
-            return $this->redirectToRoute(
-                'ojs_journal_section_show',
-                [
-                    'id' => $entity->getId(),
-                    'journalId' => $journal->getId(),
-                ]
-            );
+            return $this->redirectToRoute('ojs_journal_section_show',  ['id' => $entity->getId()]);
         }
 
         return $this->render(
@@ -149,13 +142,13 @@ class SectionController extends Controller
      * @param Journal $journal
      * @return Form
      */
-    private function createCreateForm(Section $entity, Journal $journal)
+    private function createCreateForm(Section $entity)
     {
         $form = $this->createForm(
             new SectionType(),
             $entity,
             array(
-                'action' => $this->generateUrl('ojs_journal_section_create', ['journalId' => $journal->getId()]),
+                'action' => $this->generateUrl('ojs_journal_section_create'),
                 'method' => 'POST',
             )
         );
@@ -177,7 +170,7 @@ class SectionController extends Controller
             throw new AccessDeniedException("You are not authorized for create section on this journal!");
         }
         $entity = new Section();
-        $form = $this->createCreateForm($entity, $journal);
+        $form = $this->createCreateForm($entity);
 
         return $this->render(
             'OjsJournalBundle:Section:new.html.twig',
@@ -191,11 +184,10 @@ class SectionController extends Controller
     /**
      * Finds and displays a Section entity.
      *
-     * @param Request $request
      * @param Section $entity
      * @return Response
      */
-    public function showAction(Request $request, Section $entity)
+    public function showAction(Section $entity)
     {
         $journal = $this->get('ojs.journal_service')->getSelectedJournal();
         if (!$this->isGranted('VIEW', $journal, 'sections')) {
@@ -265,7 +257,7 @@ class SectionController extends Controller
             array(
                 'action' => $this->generateUrl(
                     'ojs_journal_section_update',
-                    array('id' => $entity->getId(), 'journalId' => $entity->getJournal()->getId())
+                    array('id' => $entity->getId())
                 ),
                 'method' => 'PUT',
             )
@@ -317,13 +309,7 @@ class SectionController extends Controller
 
             $this->successFlashBag('successful.update');
 
-            return $this->redirectToRoute(
-                'ojs_journal_section_edit',
-                [
-                    'id' => $id,
-                    'journalId' => $journal->getId(),
-                ]
-            );
+            return $this->redirectToRoute('ojs_journal_section_edit', ['id' => $id]);
         }
 
         return $this->render(
@@ -380,6 +366,6 @@ class SectionController extends Controller
 
         $this->successFlashBag('successful.remove');
 
-        return $this->redirectToRoute('ojs_journal_section_index', ['journalId' => $journal->getId()]);
+        return $this->redirectToRoute('ojs_journal_section_index');
     }
 }

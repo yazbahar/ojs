@@ -27,11 +27,10 @@ class CitationController extends Controller
     /**
      * Lists all Citation entities.
      *
-     * @param   Request $request
      * @param   Integer $articleId
      * @return  Response
      */
-    public function indexAction(Request $request, $articleId)
+    public function indexAction($articleId)
     {
         $journal = $this->get('ojs.journal_service')->getSelectedJournal();
         $this->throw404IfNotFound($journal);
@@ -64,15 +63,15 @@ class CitationController extends Controller
         $actionColumn = new ActionsColumn("actions", 'actions');
         $rowAction[] = $gridAction->showAction(
             'ojs_journal_citation_show',
-            ['id', 'journalId' => $journal->getId(), 'articleId' => $articleId]
+            ['id', 'articleId' => $articleId]
         );
         $rowAction[] = $gridAction->editAction(
             'ojs_journal_citation_edit',
-            ['id', 'journalId' => $journal->getId(), 'articleId' => $articleId]
+            ['id', 'articleId' => $articleId]
         );
         $rowAction[] = $gridAction->deleteAction(
             'ojs_journal_citation_delete',
-            ['id', 'journalId' => $journal->getId(), 'articleId' => $articleId]
+            ['id', 'articleId' => $articleId]
         );
         $actionColumn->setRowActions($rowAction);
         $grid->addColumn($actionColumn);
@@ -114,7 +113,7 @@ class CitationController extends Controller
             return $this->redirect(
                 $this->generateUrl(
                     'ojs_journal_citation_show',
-                    array('id' => $entity->getId(), 'journalId' => $journal->getId(), 'articleId' => $articleId)
+                    array('id' => $entity->getId(), 'articleId' => $articleId)
                 )
             );
         }
@@ -138,14 +137,13 @@ class CitationController extends Controller
      */
     private function createCreateForm(Citation $entity, $articleId)
     {
-        $journal = $this->get('ojs.journal_service')->getSelectedJournal();
         $form = $this->createForm(
             new CitationType(),
             $entity,
             array(
                 'action' => $this->generateUrl(
                     'ojs_journal_citation_create',
-                    array('journalId' => $journal->getId(), 'articleId' => $articleId)
+                    array('articleId' => $articleId)
                 ),
                 'citationTypes' => array_keys($this->container->getParameter('citation_types')),
                 'method' => 'POST',
@@ -269,14 +267,13 @@ class CitationController extends Controller
      */
     private function createEditForm(Citation $entity, $articleId)
     {
-        $journal = $this->get('ojs.journal_service')->getSelectedJournal();
         $form = $this->createForm(
             new CitationType(),
             $entity,
             array(
                 'action' => $this->generateUrl(
                     'ojs_journal_citation_update',
-                    array('id' => $entity->getId(), 'journalId' => $journal->getId(), 'articleId' => $articleId)
+                    array('id' => $entity->getId(), 'articleId' => $articleId)
                 ),
                 'citationTypes' => array_keys($this->container->getParameter('citation_types')),
                 'method' => 'PUT',
@@ -321,7 +318,7 @@ class CitationController extends Controller
             return $this->redirect(
                 $this->generateUrl(
                     'ojs_journal_citation_edit',
-                    array('id' => $id, 'journalId' => $journal->getId(), 'articleId' => $articleId)
+                    array('id' => $id, 'articleId' => $articleId)
                 )
             );
         }
@@ -372,7 +369,7 @@ class CitationController extends Controller
         return $this->redirect(
             $this->generateUrl(
                 'ojs_journal_citation_index',
-                array('journalId' => $journal->getId(), 'articleId' => $articleId)
+                array('articleId' => $articleId)
             )
         );
     }

@@ -49,7 +49,7 @@ class ManagerController extends Controller
             new JournalType(),
             $journal,
             array(
-                'action' => $this->generateUrl('ojs_journal_settings_update', ['journalId' => $journal->getId()]),
+                'action' => $this->generateUrl('ojs_journal_settings_update'),
                 'method' => 'PUT',
             )
         );
@@ -94,7 +94,7 @@ class ManagerController extends Controller
             }
 
             $this->successFlashBag('successful.update');
-            return $this->redirectToRoute('ojs_journal_settings_index', ['journalId' => $entity->getId()]);
+            return $this->redirectToRoute('ojs_journal_settings_index');
         }
 
         return $this->render(

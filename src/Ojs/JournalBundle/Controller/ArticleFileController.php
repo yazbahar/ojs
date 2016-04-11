@@ -9,7 +9,6 @@ use Ojs\CoreBundle\Controller\OjsController as Controller;
 use Ojs\CoreBundle\Params\ArticleFileParams;
 use Ojs\JournalBundle\Entity\Article;
 use Ojs\JournalBundle\Entity\ArticleFile;
-use Ojs\JournalBundle\Entity\Journal;
 use Ojs\JournalBundle\Form\Type\ArticleFileType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -57,15 +56,15 @@ class ArticleFileController extends Controller
         $actionColumn = new ActionsColumn("actions", 'actions');
         $rowAction[] = $gridAction->showAction(
             'ojs_journal_article_file_show',
-            ['id', 'journalId' => $journal->getId(), 'articleId' => $articleId]
+            ['id', 'articleId' => $articleId]
         );
         $rowAction[] = $gridAction->editAction(
             'ojs_journal_article_file_edit',
-            ['id', 'journalId' => $journal->getId(), 'articleId' => $articleId]
+            ['id', 'articleId' => $articleId]
         );
         $rowAction[] = $gridAction->deleteAction(
             'ojs_journal_article_file_delete',
-            ['id', 'journalId' => $journal->getId(), 'articleId' => $articleId]
+            ['id', 'articleId' => $articleId]
         );
 
         $actionColumn->setRowActions($rowAction);
@@ -99,7 +98,7 @@ class ArticleFileController extends Controller
         $this->throw404IfNotFound($article);
 
         $entity = new ArticleFile();
-        $form = $this->createCreateForm($entity, $journal, $article, $journalService->getJournalLocales())
+        $form = $this->createCreateForm($entity, $article, $journalService->getJournalLocales())
                      ->add('create', 'submit', ['label' => 'c']);
         $form->handleRequest($request);
 
@@ -113,7 +112,7 @@ class ArticleFileController extends Controller
             return $this->redirect(
                 $this->generateUrl(
                     'ojs_journal_article_file_index',
-                    ['articleId' => $article->getId(), 'journalId' => $journal->getId()]
+                    ['articleId' => $article->getId()]
                 )
             );
         }
@@ -130,12 +129,11 @@ class ArticleFileController extends Controller
     /**
      * Creates a form to create a ArticleFile entity.
      * @param   ArticleFile $entity
-     * @param   Journal $journal
      * @param   Article $article
      * @param   $locales
      * @return Form
      */
-    private function createCreateForm(ArticleFile $entity, Journal $journal, Article $article, $locales)
+    private function createCreateForm(ArticleFile $entity, Article $article, $locales)
     {
         $form = $this->createForm(
             new ArticleFileType(),
@@ -143,7 +141,7 @@ class ArticleFileController extends Controller
             [
                 'action'  => $this->generateUrl(
                     'ojs_journal_article_file_create',
-                    ['journalId' => $journal->getId(), 'articleId' => $article->getId()]
+                    ['articleId' => $article->getId()]
                 ),
                 'method'  => 'POST',
                 'locales' => $locales,
@@ -171,7 +169,7 @@ class ArticleFileController extends Controller
 
         $entity = new ArticleFile();
         $entity->setArticle($article);
-        $form = $this->createCreateForm($entity, $journal, $article, $journalService->getJournalLocales())
+        $form = $this->createCreateForm($entity, $article, $journalService->getJournalLocales())
                      ->add('create', 'submit', ['label' => 'c']);
 
         return $this->render(
@@ -258,7 +256,7 @@ class ArticleFileController extends Controller
 
         $this->throw404IfNotFound($entity);
 
-        $editForm = $this->createEditForm($entity, $journal, $article, $journalService->getJournalLocales())
+        $editForm = $this->createEditForm($entity, $article, $journalService->getJournalLocales())
                          ->add('save', 'submit', ['label' => 'save']);
 
         $token = $this
@@ -278,11 +276,10 @@ class ArticleFileController extends Controller
     /**
      * Creates a form to edit a ArticleFile entity.
      * @param ArticleFile $entity The entity
-     * @param Journal $journal
      * @param Article $article
      * @return Form The form
      */
-    private function createEditForm(ArticleFile $entity, Journal $journal, Article $article, $locales)
+    private function createEditForm(ArticleFile $entity, Article $article, $locales)
     {
         $form = $this->createForm(
             new ArticleFileType(),
@@ -290,7 +287,7 @@ class ArticleFileController extends Controller
             [
                 'action'  => $this->generateUrl(
                     'ojs_journal_article_file_update',
-                    ['id' => $entity->getId(), 'journalId' => $journal->getId(), 'articleId' => $article->getId()]
+                    ['id' => $entity->getId(), 'articleId' => $article->getId()]
                 ),
                 'method'  => 'PUT',
                 'locales' => $locales,
@@ -330,7 +327,7 @@ class ArticleFileController extends Controller
         );
         $this->throw404IfNotFound($entity);
 
-        $editForm = $this->createEditForm($entity, $journal, $article, $journalService->getJournalLocales())
+        $editForm = $this->createEditForm($entity, $article, $journalService->getJournalLocales())
                          ->add('save', 'submit', ['label' => 'save']);
         $editForm->handleRequest($request);
 
@@ -342,7 +339,7 @@ class ArticleFileController extends Controller
             return $this->redirect(
                 $this->generateUrl(
                     'ojs_journal_article_file_edit',
-                    ['id' => $id, 'journalId' => $journal->getId(), 'articleId' => $article->getId()]
+                    ['id' => $id, 'articleId' => $article->getId()]
                 )
             );
         }
@@ -398,7 +395,7 @@ class ArticleFileController extends Controller
 
         return $this->redirectToRoute(
             'ojs_journal_article_file_index',
-            ['articleId' => $entity->getArticle()->getId(), 'journalId' => $journal->getId()]
+            ['articleId' => $entity->getArticle()->getId()]
         );
     }
 }

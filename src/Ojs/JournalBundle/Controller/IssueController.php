@@ -68,10 +68,10 @@ class IssueController extends Controller
         $gridAction = $this->get('grid_action');
 
         $actionColumn = new ActionsColumn("actions", 'actions');
-        $rowAction[] = $gridAction->showAction('ojs_journal_issue_show', ['id', 'journalId' => $journal->getId()]);
+        $rowAction[] = $gridAction->showAction('ojs_journal_issue_show', ['id']);
 
         $articleAction = new RowAction('<i class="fa fa-file-text"></i>', 'ojs_journal_issue_view');
-        $articleAction->setRouteParameters(['journalId' => $journal->getId(), 'id']);
+        $articleAction->setRouteParameters(['id']);
         $articleAction->setAttributes(
             [
                 'class' => 'btn btn-success btn-xs  ',
@@ -83,7 +83,7 @@ class IssueController extends Controller
         $rowAction[] = $articleAction;
 
         $lastIssueAction = new RowAction('<i class="fa fa-cog"></i>', 'ojs_journal_issue_make_last');
-        $lastIssueAction->setRouteParameters(['journalId' => $journal->getId(), 'id']);
+        $lastIssueAction->setRouteParameters(['id']);
         $lastIssueAction->setAttributes(
             [
                 'class' => 'btn btn-success btn-xs  ',
@@ -94,13 +94,13 @@ class IssueController extends Controller
 
         $rowAction[] = $lastIssueAction;
         if ($this->isGranted('EDIT', $journal, 'issues')) {
-            $rowAction[] = $gridAction->editAction('ojs_journal_issue_edit', ['id', 'journalId' => $journal->getId()]);
+            $rowAction[] = $gridAction->editAction('ojs_journal_issue_edit', ['id']);
         }
 
         if ($this->isGranted('DELETE', $journal, 'issues')) {
             $rowAction[] = $gridAction->deleteAction(
                 'ojs_journal_issue_delete',
-                ['id', 'journalId' => $journal->getId()]
+                ['id']
             );
         }
 
@@ -132,7 +132,7 @@ class IssueController extends Controller
         }
 
         $entity = new Issue();
-        $form = $this->createCreateForm($entity, $journal->getId());
+        $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -156,7 +156,7 @@ class IssueController extends Controller
 
             return $this->redirectToRoute(
                 'ojs_journal_issue_show',
-                ['id' => $entity->getId(), 'journalId' => $journal->getId()]
+                ['id' => $entity->getId()]
             );
         }
 
@@ -173,16 +173,15 @@ class IssueController extends Controller
      * Creates a form to create a Issue entity.
      *
      * @param   Issue   $entity     The entity
-     * @param   integer $journalId
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createCreateForm(Issue $entity, $journalId)
+    private function createCreateForm(Issue $entity)
     {
         $form = $this->createForm(
             new IssueType(),
             $entity,
             array(
-                'action' => $this->generateUrl('ojs_journal_issue_create', ['journalId' => $journalId]),
+                'action' => $this->generateUrl('ojs_journal_issue_create'),
                 'method' => 'POST',
             )
         );
@@ -204,7 +203,7 @@ class IssueController extends Controller
         }
 
         $entity = new Issue();
-        $form = $this->createCreateForm($entity, $journal->getId());
+        $form = $this->createCreateForm($entity);
 
         return $this->render(
             'OjsJournalBundle:Issue:new.html.twig',
@@ -268,7 +267,7 @@ class IssueController extends Controller
         $entity = $em->getRepository('OjsJournalBundle:Issue')->find($id);
 
         $this->throw404IfNotFound($entity);
-        $editForm = $this->createEditForm($entity, $journal->getId());
+        $editForm = $this->createEditForm($entity);
 
 
         return $this->render(
@@ -283,10 +282,9 @@ class IssueController extends Controller
     /**
      * Creates a form to edit a Issue entity.
      * @param   Issue $entity The entity
-     * @param   integer $journalId
      * @return  \Symfony\Component\Form\Form The form
      */
-    private function createEditForm(Issue $entity, $journalId)
+    private function createEditForm(Issue $entity)
     {
         $form = $this->createForm(
             new IssueType(),
@@ -294,7 +292,7 @@ class IssueController extends Controller
             array(
                 'action' => $this->generateUrl(
                     'ojs_journal_issue_update',
-                    ['id' => $entity->getId(), 'journalId' => $journalId]
+                    ['id' => $entity->getId()]
                 ),
                 'method' => 'PUT',
             )
@@ -323,7 +321,7 @@ class IssueController extends Controller
         $entity = $em->getRepository('OjsJournalBundle:Issue')->find($id);
 
         $this->throw404IfNotFound($entity);
-        $editForm = $this->createEditForm($entity, $journal->getId());
+        $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
         if ($editForm->isValid()) {
 
@@ -343,7 +341,7 @@ class IssueController extends Controller
 
             return $this->redirectToRoute(
                 'ojs_journal_issue_edit',
-                ['journalId' => $entity->getJournal()->getId(), 'id' => $id]
+                ['id' => $id]
             );
         }
 
@@ -409,7 +407,7 @@ class IssueController extends Controller
 
         $this->successFlashBag('deletion.issue');
 
-        return $this->redirectToRoute('ojs_journal_issue_index', ['journalId' => $journal->getId()]);
+        return $this->redirectToRoute('ojs_journal_issue_index');
     }
 
     /**
@@ -614,8 +612,6 @@ class IssueController extends Controller
         $em->flush();
         $this->successFlashBag('successfully.set.as.last.issue');
 
-        return $this->redirectToRoute('ojs_journal_issue_index', [
-            'journalId' => $journal->getId()
-        ]);
+        return $this->redirectToRoute('ojs_journal_issue_index');
     }
 }

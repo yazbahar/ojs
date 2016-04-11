@@ -37,7 +37,7 @@ ojs_core:
 
 ojs_journal_panel:
   resource: '@OjsJournalBundle/Resources/config/routing_panel.yml'
-  prefix: /journal
+  prefix: /journal/{journalId}
 
 auth:
   resource: '@OjsUserBundle/Resources/config/routing.yml'

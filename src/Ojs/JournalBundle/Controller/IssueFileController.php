@@ -64,9 +64,9 @@ class IssueFileController extends Controller
         $grid = $this->get('grid')->setSource($source);
         $gridAction = $this->get('grid_action');
         $actionColumn = new ActionsColumn("actions", 'actions');
-        $rowAction[] = $gridAction->showAction('ojs_journal_issue_file_show', ['id', 'journalId' => $journal->getId(), 'issueId' => $issueId]);
-        $rowAction[] = $gridAction->editAction('ojs_journal_issue_file_edit', ['id', 'journalId' => $journal->getId(), 'issueId' => $issueId]);
-        $rowAction[] = $gridAction->deleteAction('ojs_journal_issue_file_delete', ['id', 'journalId' => $journal->getId(), 'issueId' => $issueId]);
+        $rowAction[] = $gridAction->showAction('ojs_journal_issue_file_show', ['id', 'issueId' => $issueId]);
+        $rowAction[] = $gridAction->editAction('ojs_journal_issue_file_edit', ['id', 'issueId' => $issueId]);
+        $rowAction[] = $gridAction->deleteAction('ojs_journal_issue_file_delete', ['id', 'issueId' => $issueId]);
         $actionColumn->setRowActions($rowAction);
         $grid->addColumn($actionColumn);
 
@@ -98,7 +98,7 @@ class IssueFileController extends Controller
 
         $entity = new IssueFile();
         $entity->setIssue($issue);
-        $form = $this->createCreateForm($entity, $journal->getId())
+        $form = $this->createCreateForm($entity)
             ->add('create', 'submit', array('label' => 'c'));
 
         $form->handleRequest($request);
@@ -111,7 +111,7 @@ class IssueFileController extends Controller
             $em->flush();
 
             return $this->redirect($this->generateUrl('ojs_journal_issue_file_edit',
-                ['id' => $entity->getId(), 'journalId' => $journal->getId(), 'issueId' => $issue->getId()]));
+                ['id' => $entity->getId(), 'issueId' => $issue->getId()]));
         }
 
         return $this->render('OjsJournalBundle:IssueFile:new.html.twig', array(
@@ -122,10 +122,9 @@ class IssueFileController extends Controller
 
     /**
      * @param IssueFile $entity
-     * @param $journalId
      * @return \Symfony\Component\Form\Form
      */
-    private function createCreateForm(IssueFile $entity, $journalId)
+    private function createCreateForm(IssueFile $entity)
     {
         $languages = $this->container->getParameter('languages');
         $langs = [];
@@ -134,7 +133,7 @@ class IssueFileController extends Controller
         }
 
         $form = $this->createForm(new IssueFileType(), $entity, [
-            'action' => $this->generateUrl('ojs_journal_issue_file_create', array('journalId' => $journalId, 'issueId' => $entity->getIssue()->getId())),
+            'action' => $this->generateUrl('ojs_journal_issue_file_create', array('issueId' => $entity->getIssue()->getId())),
             'method' => 'POST',
             'languages' => $langs,
         ]);
@@ -162,7 +161,7 @@ class IssueFileController extends Controller
         $entity = new IssueFile();
         $entity->setIssue($issue);
 
-        $form = $this->createCreateForm($entity, $journal->getId())
+        $form = $this->createCreateForm($entity)
             ->add('create', 'submit', array('label' => 'c'));
 
         return $this->render('OjsJournalBundle:IssueFile:new.html.twig', array(
@@ -254,7 +253,7 @@ class IssueFileController extends Controller
             $langs[$lang['code']] = $lang['name'];
         }
         $form = $this->createForm(new IssueFileType(), $entity, [
-            'action' => $this->generateUrl('ojs_journal_issue_file_update', ['id' => $entity->getId(), 'journalId' => $entity->getIssue()->getJournal()->getId(), 'issueId' => $entity->getIssue()->getId()]),
+            'action' => $this->generateUrl('ojs_journal_issue_file_update', ['id' => $entity->getId(), 'issueId' => $entity->getIssue()->getId()]),
             'method' => 'PUT',
             'languages' => $langs,
         ]);
@@ -294,7 +293,7 @@ class IssueFileController extends Controller
         if ($editForm->isValid()) {
             $em->flush();
 
-            return $this->redirect($this->generateUrl('ojs_journal_issue_file_edit', array('id' => $id, 'journalId' => $journal->getId(), 'issueId' => $entity->getIssue()->getId())));
+            return $this->redirect($this->generateUrl('ojs_journal_issue_file_edit', array('id' => $id, 'issueId' => $entity->getIssue()->getId())));
         }
 
         return $this->render('OjsJournalBundle:IssueFile:edit.html.twig', array(
@@ -336,6 +335,6 @@ class IssueFileController extends Controller
         $em->remove($entity);
         $em->flush();
         $this->successFlashBag('successful.remove');
-        return $this->redirect($this->generateUrl('ojs_journal_issue_file_index', ['journalId' => $journal->getId(), 'issueId' => $entity->getIssue()->getId()]));
+        return $this->redirect($this->generateUrl('ojs_journal_issue_file_index', ['issueId' => $entity->getIssue()->getId()]));
     }
 }

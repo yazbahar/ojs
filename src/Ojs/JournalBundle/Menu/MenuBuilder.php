@@ -20,15 +20,13 @@ class MenuBuilder extends ContainerAware
         $dispatcher = $this->container->get('event_dispatcher');
         $checker = $this->container->get('security.authorization_checker');
         $journal = $this->container->get('ojs.journal_service')->getSelectedJournal();
-        $journalId = $journal->getId();
         $ojsTwigExtension = $this->container->get('ojs.twig.ojs_extension');
 
         $menu = $factory->createItem('root')->setChildrenAttribute('class', 'nav nav-sidebar');
 
         if ($checker->isGranted('EDIT', $journal)) {
             $menu->addChild('settings', [
-                'route'             => 'ojs_journal_settings_index',
-                'routeParameters'   => ['journalId' => $journalId],
+                'route'             => 'ojs_journal_settings_index'
             ]);
         }
 
@@ -80,7 +78,6 @@ class MenuBuilder extends ContainerAware
             if (empty($field) || $checker->isGranted('VIEW', $journal, $field) && $field != 'publisherManager') {
                 $menu->addChild($label, [
                     'route' => $path,
-                    'routeParameters'   => ['journalId' => $journalId],
                     'attributes'        => ['class' => $separator],
                     'extras'            => ['icon' => $icon]
                 ]);
@@ -112,20 +109,17 @@ class MenuBuilder extends ContainerAware
         $dispatcher = $this->container->get('event_dispatcher');
         $checker = $this->container->get('security.authorization_checker');
         $journal = $this->container->get('ojs.journal_service')->getSelectedJournal();
-        $journalId = $journal->getId();
 
         $menu = $factory->createItem('root')->setChildrenAttribute('class', 'nav nav-sidebar');
 
         $menu->addChild('dashboard', [
             'route' => 'ojs_journal_dashboard_index',
-            'routeParameters' => ['journalId' => $journalId],
             'extras' => ['icon' => 'dashboard']
         ]);
 
         if ($checker->isGranted('CREATE', $journal, 'articles')) {
             $menu->addChild('article.submit', [
                 'route' => 'ojs_journal_submission_new',
-                'routeParameters' => ['journalId' => $journalId],
                 'extras' => ['icon' => 'plus-circle',]
             ]);
         }
@@ -158,13 +152,10 @@ class MenuBuilder extends ContainerAware
         $journal = $this->container->get('ojs.journal_service')->getSelectedJournal();
         if ($journal) {
 
-            $journalId = $journal->getId();
-
             if ($checker->isGranted('CREATE', $journal, 'articles')) {
 
                 $menu->addChild('article.submit', [
                     'route' => 'ojs_journal_submission_new',
-                    'routeParameters' => ['journalId' => $journalId],
                     'attributes' => array('data-toggle' => 'tooltip', 'data-placement' => 'left'),
                     'extras' => ['icon' => 'file-text']
                 ]);
@@ -174,7 +165,6 @@ class MenuBuilder extends ContainerAware
 
                 $menu->addChild('title.users', [
                     'route' => 'ojs_journal_user_index',
-                    'routeParameters' => ['journalId' => $journalId],
                     'attributes' => array('data-toggle' => 'tooltip', 'data-placement' => 'left'),
                     'extras' => ['icon' => 'key']
                 ]);
@@ -184,7 +174,6 @@ class MenuBuilder extends ContainerAware
 
                 $menu->addChild('title.issues', [
                     'route' => 'ojs_journal_issue_index',
-                    'routeParameters' => ['journalId' => $journalId],
                     'attributes' => array('data-toggle' => 'tooltip', 'data-placement' => 'left'),
                     'extras' => ['icon' => 'plug']
                 ]);
@@ -193,7 +182,6 @@ class MenuBuilder extends ContainerAware
             if ($checker->isGranted('VIEW', $journal, 'articles')) {
                 $menu->addChild('articles', [
                     'route' => 'ojs_journal_submission_me',
-                    'routeParameters' => ['journalId' => $journalId],
                     'attributes' => array('data-toggle' => 'tooltip', 'data-placement' => 'left'),
                     'extras' => ['icon' => 'file-o']
                 ]);

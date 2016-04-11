@@ -38,15 +38,15 @@ class JournalAnnouncementController extends OjsController
         $actionColumn = new ActionsColumn("actions", 'actions');
         $rowAction[] = $gridAction->showAction(
             'ojs_journal_announcement_show',
-            ['id', 'journalId' => $journal->getId()]
+            ['id']
         );
         $rowAction[] = $gridAction->editAction(
             'ojs_journal_announcement_edit',
-            ['id', 'journalId' => $journal->getId()]
+            ['id']
         );
         $rowAction[] = $gridAction->deleteAction(
             'ojs_journal_announcement_delete',
-            ['id', 'journalId' => $journal->getId()]
+            ['id']
         );
         $actionColumn->setRowActions($rowAction);
         $grid->addColumn($actionColumn);
@@ -87,12 +87,11 @@ class JournalAnnouncementController extends OjsController
      */
     private function createCreateForm(JournalAnnouncement $entity)
     {
-        $journal = $this->get('ojs.journal_service')->getSelectedJournal();
         $form = $this->createForm(
             new JournalAnnouncementType(),
             $entity,
             [
-                'action' => $this->generateUrl('ojs_journal_announcement_create', ['journalId' => $journal->getId()]),
+                'action' => $this->generateUrl('ojs_journal_announcement_create'),
                 'method' => 'POST'
             ]
         );
@@ -141,7 +140,7 @@ class JournalAnnouncementController extends OjsController
 
             return $this->redirectToRoute(
                 'ojs_journal_announcement_show',
-                ['id' => $entity->getId(), 'journalId' => $journal->getId()]
+                ['id' => $entity->getId()]
             );
         }
 
@@ -232,7 +231,6 @@ class JournalAnnouncementController extends OjsController
                     'ojs_journal_announcement_update',
                     [
                         'id' => $entity->getId(),
-                        'journalId' => $entity->getJournal()->getId()
                     ]
                 ),
                 'method' => 'PUT',
@@ -288,7 +286,7 @@ class JournalAnnouncementController extends OjsController
 
             return $this->redirectToRoute(
                 'ojs_journal_announcement_edit',
-                ['id' => $entity->getId(), 'journalId' => $journal->getId()]
+                ['id' => $entity->getId()]
             );
         }
 
@@ -345,6 +343,6 @@ class JournalAnnouncementController extends OjsController
 
         $this->successFlashBag('successful.remove');
 
-        return $this->redirectToRoute('ojs_journal_announcement_index', ['journalId' => $journal->getId()]);
+        return $this->redirectToRoute('ojs_journal_announcement_index');
     }
 }

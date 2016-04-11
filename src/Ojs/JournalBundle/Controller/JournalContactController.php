@@ -64,15 +64,15 @@ class JournalContactController extends Controller
 
         $rowAction[] = $gridAction->showAction(
             'ojs_journal_journal_contact_show',
-            ['id', 'journalId' => $journal->getId()]
+            ['id']
         );
         $rowAction[] = $gridAction->editAction(
             'ojs_journal_journal_contact_edit',
-            ['id', 'journalId' => $journal->getId()]
+            ['id']
         );
         $rowAction[] = $gridAction->deleteAction(
             'ojs_journal_journal_contact_delete',
-            ['id', 'journalId' => $journal->getId()]
+            ['id']
         );
         $actionColumn->setRowActions($rowAction);
         $grid->addColumn($actionColumn);
@@ -101,7 +101,7 @@ class JournalContactController extends Controller
             throw new AccessDeniedException("You are not authorized for view this page!");
         }
         $entity = new JournalContact();
-        $form = $this->createCreateForm($entity, $journal->getId());
+        $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -124,7 +124,7 @@ class JournalContactController extends Controller
 
             return $this->redirectToRoute(
                 'ojs_journal_journal_contact_show',
-                array('id' => $entity->getId(), 'journalId' => $journal->getId())
+                array('id' => $entity->getId())
             );
         }
 
@@ -141,13 +141,12 @@ class JournalContactController extends Controller
      * Creates a form to create a JournalContact entity.
      *
      * @param  JournalContact $entity The entity
-     * @param  Integer $journalId
      * @return Form           The form
      */
-    private function createCreateForm(JournalContact $entity, $journalId)
+    private function createCreateForm(JournalContact $entity)
     {
         $options = array(
-            'action' => $this->generateUrl('ojs_journal_journal_contact_create', array('journalId' => $journalId)),
+            'action' => $this->generateUrl('ojs_journal_journal_contact_create'),
             'method' => 'POST',
         );
         $form = $this->createForm(new JournalContactType(), $entity, $options);
@@ -169,7 +168,7 @@ class JournalContactController extends Controller
             throw new AccessDeniedException("You are not authorized for view this page!");
         }
         $entity = new JournalContact();
-        $form = $this->createCreateForm($entity, $journal->getId());
+        $form = $this->createCreateForm($entity);
 
         return $this->render(
             'OjsJournalBundle:JournalContact:new.html.twig',
@@ -230,7 +229,7 @@ class JournalContactController extends Controller
         $entity = $em->getRepository('OjsJournalBundle:JournalContact')->find($id);
         $this->throw404IfNotFound($entity);
 
-        $editForm = $this->createEditForm($entity, $journal->getId());
+        $editForm = $this->createEditForm($entity);
 
         $token = $this
             ->get('security.csrf.token_manager')
@@ -250,11 +249,10 @@ class JournalContactController extends Controller
      * Creates a form to edit a JournalContact entity.
      *
      * @param JournalContact $entity The entity
-     * @param Integer $journalId
      *
      * @return Form The form
      */
-    private function createEditForm(JournalContact $entity, $journalId)
+    private function createEditForm(JournalContact $entity)
     {
         $form = $this->createForm(
             new JournalContactType(),
@@ -262,7 +260,7 @@ class JournalContactController extends Controller
             array(
                 'action' => $this->generateUrl(
                     'ojs_journal_journal_contact_update',
-                    array('id' => $entity->getId(), 'journalId' => $journalId)
+                    array('id' => $entity->getId())
                 ),
                 'method' => 'PUT',
             )
@@ -293,7 +291,7 @@ class JournalContactController extends Controller
         $entity = $em->getRepository('OjsJournalBundle:JournalContact')->find($id);
         $this->throw404IfNotFound($entity);
 
-        $editForm = $this->createEditForm($entity, $journal->getId());
+        $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
@@ -312,7 +310,7 @@ class JournalContactController extends Controller
             $this->successFlashBag('successfully.update');
             return $this->redirectToRoute(
                 'ojs_journal_journal_contact_edit',
-                array('id' => $entity->getId(), 'journalId' => $journal->getId())
+                array('id' => $entity->getId())
             );
         }
 
@@ -365,6 +363,6 @@ class JournalContactController extends Controller
         }
 
         $this->successFlashBag('successfully.remove');
-        return $this->redirectToRoute('ojs_journal_journal_contact_index', array('journalId' => $journal->getId()));
+        return $this->redirectToRoute('ojs_journal_journal_contact_index');
     }
 }

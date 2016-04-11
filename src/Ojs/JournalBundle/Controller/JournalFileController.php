@@ -3,11 +3,8 @@
 namespace Ojs\JournalBundle\Controller;
 
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
-use APY\DataGridBundle\Grid\Row;
 use APY\DataGridBundle\Grid\Source\Entity;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\QueryBuilder;
-use Ojs\CmsBundle\Form\Type\FileType;
 use Ojs\CoreBundle\Controller\OjsController;
 use Ojs\CoreBundle\Helper\StringHelper;
 use Ojs\JournalBundle\Entity\JournalFile;
@@ -20,10 +17,9 @@ use Symfony\Component\Security\Csrf\Exception\TokenNotFoundException;
 class JournalFileController extends OjsController
 {
     /**
-     * @param Request $request
      * @return Response
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
         $journal = $this->get('ojs.journal_service')->getSelectedJournal();
 
@@ -36,9 +32,9 @@ class JournalFileController extends OjsController
         $gridAction = $this->get('grid_action');
 
         $actionColumn = new ActionsColumn("actions", 'actions');
-        $rowAction[] = $gridAction->showAction('ojs_journal_filemanager_show', ['id', 'journalId' => $journal->getId()]);
-        $rowAction[] = $gridAction->editAction('ojs_journal_filemanager_edit', ['id', 'journalId' => $journal->getId()]);
-        $rowAction[] = $gridAction->deleteAction('ojs_journal_filemanager_delete', ['id', 'journalId' => $journal->getId()]);
+        $rowAction[] = $gridAction->showAction('ojs_journal_filemanager_show', ['id']);
+        $rowAction[] = $gridAction->editAction('ojs_journal_filemanager_edit', ['id']);
+        $rowAction[] = $gridAction->deleteAction('ojs_journal_filemanager_delete', ['id']);
         $actionColumn->setRowActions($rowAction);
         $grid->addColumn($actionColumn);
 
@@ -73,12 +69,11 @@ class JournalFileController extends OjsController
      */
     private function createCreateForm(JournalFile $entity)
     {
-        $journal = $this->get('ojs.journal_service')->getSelectedJournal();
         $form = $this->createForm(
             new JournalFileType(),
             $entity,
             [
-                'action' => $this->generateUrl('ojs_journal_filemanager_create', ['journalId' => $journal->getId()]),
+                'action' => $this->generateUrl('ojs_journal_filemanager_create'),
                 'method' => 'POST'
             ]
         );
@@ -117,7 +112,7 @@ class JournalFileController extends OjsController
 
             $this->successFlashBag('successful.create');
             return $this->redirectToRoute('ojs_journal_filemanager_show',
-                ['id' => $entity->getId(), 'journalId' => $journal->getId()]);
+                ['id' => $entity->getId()]);
         }
 
         return $this->render(
@@ -205,7 +200,7 @@ class JournalFileController extends OjsController
             [
                 'action' => $this->generateUrl(
                     'ojs_journal_filemanager_update',
-                    ['id' => $entity->getId(), 'journalId' => $entity->getJournal()->getId()]
+                    ['id' => $entity->getId()]
                 ),
                 'method' => 'PUT',
             ]
@@ -244,7 +239,7 @@ class JournalFileController extends OjsController
             $em->flush();
             $this->successFlashBag('successful.update');
             return $this->redirectToRoute('ojs_journal_filemanager_edit',
-                ['id' => $entity->getId(), 'journalId' => $journal->getId()]);
+                ['id' => $entity->getId()]);
         }
 
         return $this->render(
@@ -287,6 +282,6 @@ class JournalFileController extends OjsController
         $em->flush();
         $this->successFlashBag('successful.remove');
 
-        return $this->redirectToRoute('ojs_journal_filemanager_index', ['journalId' => $journal->getId()]);
+        return $this->redirectToRoute('ojs_journal_filemanager_index');
     }
 }

@@ -13,8 +13,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Core\Exception\TokenNotFoundException;
-use Symfony\Component\Yaml\Parser;
 
 /**
  * MailTemplate controller.
@@ -42,8 +40,8 @@ class MailTemplateController extends Controller
         $actionColumn = new ActionsColumn("actions", 'actions');
         $rowAction = [];
 
-        $rowAction[] = $gridAction->showAction('ojs_journal_mail_template_show', ['id', 'journalId' => $journal->getId()]);
-        $rowAction[] = $gridAction->editAction('ojs_journal_mail_template_edit', ['id', 'journalId' => $journal->getId()]);
+        $rowAction[] = $gridAction->showAction('ojs_journal_mail_template_show', ['id']);
+        $rowAction[] = $gridAction->editAction('ojs_journal_mail_template_edit', ['id']);
         $actionColumn->setRowActions($rowAction);
         $grid->addColumn($actionColumn);
 
@@ -142,7 +140,7 @@ class MailTemplateController extends Controller
             new MailTemplateType(),
             $entity,
             array(
-                'action' => $this->generateUrl('ojs_journal_mail_template_update', array('id' => $entity->getId(), 'journalId' => $entity->getJournal()->getId())),
+                'action' => $this->generateUrl('ojs_journal_mail_template_update', array('id' => $entity->getId())),
                 'method' => 'PUT',
             )
         );
@@ -177,13 +175,7 @@ class MailTemplateController extends Controller
             $em->flush();
             $this->successFlashBag('successful.update');
 
-            return $this->redirectToRoute(
-                'ojs_journal_mail_template_edit',
-                [
-                    'id' => $entity->getId(),
-                    'journalId' => $journal->getId(),
-                ]
-            );
+            return $this->redirectToRoute('ojs_journal_mail_template_edit', ['id' => $entity->getId()]);
         }
 
         return $this->render(

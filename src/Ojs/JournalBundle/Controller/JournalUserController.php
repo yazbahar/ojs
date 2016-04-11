@@ -68,8 +68,8 @@ class JournalUserController extends Controller
         $gridAction = $this->get('grid_action');
 
         $rowAction = [];
-        $rowAction[] = $gridAction->editAction('ojs_journal_user_edit', ['journalId' => $journal->getId(), 'id']);
-        $rowAction[] = $gridAction->deleteAction('ojs_journal_user_delete', ['journalId' => $journal->getId(), 'id']);
+        $rowAction[] = $gridAction->editAction('ojs_journal_user_edit', ['id']);
+        $rowAction[] = $gridAction->deleteAction('ojs_journal_user_delete', ['id']);
         $actionColumn = new ActionsColumn("actions", "actions");
         $actionColumn->setRowActions($rowAction);
         $grid->addColumn($actionColumn);
@@ -90,7 +90,7 @@ class JournalUserController extends Controller
         }
 
         $entity = new User();
-        $form = $this->createCreateForm($entity, $journal->getId());
+        $form = $this->createCreateForm($entity);
 
         return $this->render(
             'OjsJournalBundle:JournalUser:new.html.twig',
@@ -103,17 +103,16 @@ class JournalUserController extends Controller
 
     /**
      * Creates a form to create a User entity.
-     * @param  integer $journalId
      * @param  User    $entity
      * @return Form    The form
      */
-    private function createCreateForm(User $entity, $journalId)
+    private function createCreateForm(User $entity)
     {
         $form = $this->createForm(
             new JournalNewUserType(),
             $entity,
             array(
-                'action' => $this->generateUrl('ojs_journal_user_create', ['journalId' => $journalId]),
+                'action' => $this->generateUrl('ojs_journal_user_create'),
                 'method' => 'POST',
             )
         );
@@ -138,7 +137,7 @@ class JournalUserController extends Controller
         }
 
         $entity = new User();
-        $form = $this->createCreateForm($entity, $journal->getId());
+        $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -172,7 +171,7 @@ class JournalUserController extends Controller
 
             return $this->redirectToRoute(
                 'ojs_journal_user_edit',
-                ['journalId' => $journal->getId(), 'id' => $journalUser->getId()]
+                ['id' => $journalUser->getId()]
             );
         }
 
@@ -194,7 +193,7 @@ class JournalUserController extends Controller
             throw new AccessDeniedException("You are not authorized for this page!");
         }
         $entity = new JournalUser();
-        $form = $this->createAddForm($entity, $journal->getId());
+        $form = $this->createAddForm($entity);
 
         $form->handleRequest($request);
         if ($form->isValid()) {
@@ -237,7 +236,7 @@ class JournalUserController extends Controller
 
             $this->successFlashBag('successful.create');
 
-            return $this->redirectToRoute('ojs_journal_user_index', ['journalId' => $journal->getId()]);
+            return $this->redirectToRoute('ojs_journal_user_index');
         }
 
         return $this->render(
@@ -249,13 +248,13 @@ class JournalUserController extends Controller
         );
     }
 
-    private function createAddForm(JournalUser $entity, $journalId)
+    private function createAddForm(JournalUser $entity)
     {
         $form = $this->createForm(
             new JournalUserType(),
             $entity,
             array(
-                'action' => $this->generateUrl('ojs_journal_user_add', ['journalId' => $journalId]),
+                'action' => $this->generateUrl('ojs_journal_user_add'),
                 'method' => 'POST',
             )
         );
@@ -291,7 +290,7 @@ class JournalUserController extends Controller
     {
         $actionUrl = $this->generateUrl(
             'ojs_journal_user_update',
-            ['journalId' => $entity->getJournal()->getId(), 'id' => $entity->getId()]
+            ['id' => $entity->getId()]
         );
         $form = $this->createForm(new JournalUserEditType(), $entity, ['method' => 'PUT', 'action' => $actionUrl]);
 
@@ -329,14 +328,14 @@ class JournalUserController extends Controller
 
             $this->successFlashBag('successful.update');
 
-            return $this->redirectToRoute('ojs_journal_user_index', ['journalId' => $journal->getId()]);
+            return $this->redirectToRoute('ojs_journal_user_index');
         }
 
         $this->errorFlashBag('error');
 
         return $this->redirectToRoute(
             'ojs_journal_user_edit',
-            ['journalId' => $journal->getId(), 'id' => $entity->getId()]
+            ['id' => $entity->getId()]
         );
     }
 
@@ -379,7 +378,7 @@ class JournalUserController extends Controller
 
         $this->successFlashBag('successful.remove');
 
-        return $this->redirectToRoute('ojs_journal_user_index', ['journalId' => $journal->getId()]);
+        return $this->redirectToRoute('ojs_journal_user_index');
     }
 
     /**

@@ -139,11 +139,11 @@ class ArticleSubmissionController extends Controller
         $actionColumn = new ActionsColumn("actions", 'actions');
         $rowAction[] = $gridAction->submissionResumeAction(
             'ojs_journal_submission_edit',
-            ['journalId' => $currentJournal->getId(), 'id']
+            ['id']
         );
         $rowAction[] = $gridAction->submissionCancelAction(
             'ojs_journal_submission_cancel',
-            ['journalId' => $currentJournal->getId(), 'id']
+            ['id']
         );
         $actionColumn->setRowActions($rowAction);
         $drafts->addColumn($actionColumn);
@@ -173,8 +173,7 @@ class ArticleSubmissionController extends Controller
 
         if (!$session->has('submissionFiles')) {
             return $this->redirectToRoute(
-                'ojs_journal_submission_start',
-                array('journalId' => $journal->getId())
+                'ojs_journal_submission_start'
             );
         }
 
@@ -270,7 +269,6 @@ class ArticleSubmissionController extends Controller
             return $this->redirectToRoute(
                 'ojs_journal_submission_preview',
                 array(
-                    'journalId' => $journal->getId(),
                     'articleId' => $article->getId(),
                 )
             );
@@ -327,10 +325,7 @@ class ArticleSubmissionController extends Controller
             $event->getType(),
             $article,
             array(
-                'action' => $this->generateUrl(
-                    'ojs_journal_submission_new',
-                    array('journalId' => $journal->getId())
-                ),
+                'action' => $this->generateUrl('ojs_journal_submission_new'),
                 'method' => 'POST',
                 'locales' => $locales,
                 'journal' => $journal,
@@ -408,7 +403,7 @@ class ArticleSubmissionController extends Controller
 
             return $this->redirectToRoute(
                 'ojs_journal_submission_preview',
-                array('journalId' => $journal->getId(), 'articleId' => $article->getId())
+                array('articleId' => $article->getId())
             );
         }
 
@@ -433,7 +428,7 @@ class ArticleSubmissionController extends Controller
             array(
                 'action' => $this->generateUrl(
                     'ojs_journal_submission_edit',
-                    array('journalId' => $journal->getId(), 'id' => $article->getId())
+                    array('id' => $article->getId())
                 ),
                 'method' => 'POST',
                 'locales' => $locales,
@@ -487,7 +482,7 @@ class ArticleSubmissionController extends Controller
             array(
                 'action' => $this->generateUrl(
                     'ojs_journal_submission_preview',
-                    array('journalId' => $journal->getId(), 'articleId' => $article->getId())
+                    array('articleId' => $article->getId())
                 ),
                 'method' => 'POST',
             )
@@ -529,8 +524,7 @@ class ArticleSubmissionController extends Controller
             $em->flush();
 
             $response = $this->redirectToRoute(
-                'ojs_journal_submission_me',
-                ['journalId' => $article->getJournal()->getId()]
+                'ojs_journal_submission_me'
             );
 
             $event = new JournalItemEvent($article);
@@ -621,7 +615,7 @@ class ArticleSubmissionController extends Controller
             }
             $session->set('submissionFiles', $submissionFiles);
 
-            return $this->redirectToRoute('ojs_journal_submission_new', array('journalId' => $journal->getId()));
+            return $this->redirectToRoute('ojs_journal_submission_new');
         }
 
         return $this->render(

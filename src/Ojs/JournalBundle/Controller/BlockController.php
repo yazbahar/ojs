@@ -4,12 +4,8 @@ namespace Ojs\JournalBundle\Controller;
 
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Source\Entity;
-use Doctrine\ORM\QueryBuilder;
 use Ojs\CoreBundle\Controller\OjsController as Controller;
 use Ojs\JournalBundle\Entity\Block;
-use Ojs\JournalBundle\Entity\Journal;
-use Ojs\JournalBundle\Event\JournalEvent;
-use Ojs\JournalBundle\Event\JournalItemEvent;
 use Ojs\JournalBundle\Form\Type\BlockType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -42,9 +38,9 @@ class BlockController extends Controller
 
         $actionColumn = new ActionsColumn("actions", 'actions');
 
-        $rowAction[] = $gridAction->showAction('ojs_journal_block_show', ['id', 'journalId' => $journal->getId()]);
-        $rowAction[] = $gridAction->editAction('ojs_journal_block_edit', ['id', 'journalId' => $journal->getId()]);
-        $rowAction[] = $gridAction->deleteAction('ojs_journal_block_delete', ['id', 'journalId' => $journal->getId()]);
+        $rowAction[] = $gridAction->showAction('ojs_journal_block_show', ['id']);
+        $rowAction[] = $gridAction->editAction('ojs_journal_block_edit', ['id']);
+        $rowAction[] = $gridAction->deleteAction('ojs_journal_block_delete', ['id']);
 
         $actionColumn->setRowActions($rowAction);
         $grid->addColumn($actionColumn);
@@ -68,7 +64,7 @@ class BlockController extends Controller
         }
 
         $entity = new Block();
-        $form = $this->createCreateForm($entity, $journal);
+        $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -81,7 +77,7 @@ class BlockController extends Controller
 
             return $this->redirectToRoute(
                 'ojs_journal_block_show',
-                ['id' => $entity->getId(), 'journalId' => $journal->getId()]
+                ['id' => $entity->getId()]
             );
         }
 
@@ -98,16 +94,15 @@ class BlockController extends Controller
      * Creates a form to create a Block entity.
      *
      * @param  Block   $entity  The entity
-     * @param  Journal $journal
      * @return Form    The form
      */
-    private function createCreateForm(Block $entity, Journal $journal)
+    private function createCreateForm(Block $entity)
     {
         $form = $this->createForm(
             new BlockType(),
             $entity,
             array(
-                'action' => $this->generateUrl('ojs_journal_block_create', ['journalId' => $journal->getId()]),
+                'action' => $this->generateUrl('ojs_journal_block_create'),
                 'method' => 'POST',
             )
         );
@@ -128,7 +123,7 @@ class BlockController extends Controller
             throw new AccessDeniedException("You not authorized for this page");
         }
         $entity = new Block();
-        $form = $this->createCreateForm($entity, $journal);
+        $form = $this->createCreateForm($entity);
 
         return $this->render(
             'OjsJournalBundle:Block:new.html.twig',
@@ -202,7 +197,7 @@ class BlockController extends Controller
             array(
                 'action' => $this->generateUrl(
                     'ojs_journal_block_update',
-                    array('id' => $entity->getId(), 'journalId' => $entity->getJournal()->getId())
+                    array('id' => $entity->getId())
                 ),
                 'method' => 'PUT',
             )
@@ -238,7 +233,7 @@ class BlockController extends Controller
 
             return $this->redirectToRoute(
                 'ojs_journal_block_edit',
-                ['id' => $entity->getId(), 'journalId' => $journal->getId()]
+                ['id' => $entity->getId()]
             );
         }
 
@@ -280,6 +275,6 @@ class BlockController extends Controller
 
         $this->successFlashBag('successful.remove');
 
-        return $this->redirectToRoute('ojs_journal_block_index', ['journalId' => $journal->getId()]);
+        return $this->redirectToRoute('ojs_journal_block_index');
     }
 }

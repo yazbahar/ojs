@@ -73,11 +73,11 @@ class ArticleController extends Controller
         $grid = $this->get('grid')->setSource($source);
         $gridAction = $this->get('grid_action');
         $actionColumn = new ActionsColumn("actions", 'actions');
-        $rowAction[] = $gridAction->showAction('ojs_journal_article_show', ['id', 'journalId' => $journal->getId()]);
-        $rowAction[] = $gridAction->editAction('ojs_journal_article_edit', ['id', 'journalId' => $journal->getId()]);
+        $rowAction[] = $gridAction->showAction('ojs_journal_article_show', ['id']);
+        $rowAction[] = $gridAction->editAction('ojs_journal_article_edit', ['id']);
         $rowAction[] = $gridAction->deleteAction(
             'ojs_journal_article_delete',
-            ['id', 'journalId' => $journal->getId()]
+            ['id']
         );
         $actionColumn->setRowActions($rowAction);
         $grid->addColumn($actionColumn);
@@ -135,7 +135,7 @@ class ArticleController extends Controller
             new ArticleType(),
             $entity,
             [
-                'action' => $this->generateUrl('ojs_journal_article_create', ['journalId' => $journal->getId()]),
+                'action' => $this->generateUrl('ojs_journal_article_create'),
                 'method' => 'POST',
                 'journal' => $journal,
             ]
@@ -187,7 +187,7 @@ class ArticleController extends Controller
 
             return $this->redirectToRoute(
                 'ojs_journal_article_show',
-                ['id' => $event->getItem()->getId(), 'journalId' => $journal->getId()]
+                ['id' => $event->getItem()->getId()]
             );
         }
 
@@ -252,7 +252,7 @@ class ArticleController extends Controller
     {
         $action = $this->generateUrl(
             'ojs_journal_article_update',
-            ['id' => $entity->getId(), 'journalId' => $journal->getId()]
+            ['id' => $entity->getId()]
         );
         $form = $this->createForm(
             new ArticleType(),
@@ -306,7 +306,7 @@ class ArticleController extends Controller
             return $this->redirect(
                 $this->generateUrl(
                     'ojs_journal_article_edit',
-                    array('id' => $event->getItem()->getId(), 'journalId' => $journal->getId())
+                    array('id' => $event->getItem()->getId())
                 )
             );
         }
@@ -362,6 +362,6 @@ class ArticleController extends Controller
             return $event->getResponse();
         }
 
-        return $this->redirectToRoute('ojs_journal_article_index', ['journalId' => $journal->getId()]);
+        return $this->redirectToRoute('ojs_journal_article_index');
     }
 }

@@ -8,7 +8,6 @@ use Doctrine\ORM\QueryBuilder;
 use Ojs\CoreBundle\Controller\OjsController as Controller;
 use Ojs\JournalBundle\Entity\Board;
 use Ojs\JournalBundle\Entity\BoardMember;
-use Ojs\JournalBundle\Entity\Journal;
 use Ojs\JournalBundle\Event\Board\BoardEvents;
 use Ojs\JournalBundle\Event\JournalEvent;
 use Ojs\JournalBundle\Event\JournalItemEvent;
@@ -68,7 +67,7 @@ class BoardController extends Controller
         $actionColumn = new ActionsColumn("actions", 'actions');
         $rowAction[] = $gridAction->showAction(
             'ojs_journal_board_show',
-            ['id', 'journalId' => $journal->getId()],
+            ['id'],
             null,
             [
                 'icon' => 'users',
@@ -76,10 +75,10 @@ class BoardController extends Controller
             ]
         );
         if ($this->isGranted('EDIT', $journal, 'boards')) {
-            $rowAction[] = $gridAction->editAction('ojs_journal_board_edit', ['id', 'journalId' => $journal->getId()]);
+            $rowAction[] = $gridAction->editAction('ojs_journal_board_edit', ['id']);
             $rowAction[] = $gridAction->deleteAction(
                 'ojs_journal_board_delete',
-                ['id', 'journalId' => $journal->getId()]
+                ['id']
             );
         }
         $actionColumn->setRowActions($rowAction);
@@ -110,7 +109,7 @@ class BoardController extends Controller
         }
 
         $entity = new Board();
-        $form = $this->createCreateForm($entity, $journal);
+        $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -133,7 +132,7 @@ class BoardController extends Controller
 
             return $this->redirectToRoute(
                 'ojs_journal_board_show',
-                ['id' => $entity->getId(), 'journalId' => $journal->getId()]
+                ['id' => $entity->getId()]
             );
         }
 
@@ -150,16 +149,15 @@ class BoardController extends Controller
      * Creates a form to create a Board entity.
      *
      * @param  Board   $entity  The entity
-     * @param  Journal $journal
      * @return Form    The form
      */
-    private function createCreateForm(Board $entity, Journal $journal)
+    private function createCreateForm(Board $entity)
     {
         $form = $this->createForm(
             new BoardType(),
             $entity,
             array(
-                'action' => $this->generateUrl('ojs_journal_board_create', ['journalId' => $journal->getId()]),
+                'action' => $this->generateUrl('ojs_journal_board_create'),
                 'method' => 'POST',
             )
         );
@@ -180,7 +178,7 @@ class BoardController extends Controller
             throw new AccessDeniedException("You not authorized for create this journal's boards!");
         }
         $entity = new Board();
-        $form = $this->createCreateForm($entity, $journal);
+        $form = $this->createCreateForm($entity);
 
         return $this->render(
             'OjsJournalBundle:Board:new.html.twig',
@@ -210,7 +208,7 @@ class BoardController extends Controller
         }
 
         $boardMember = new BoardMember();
-        $addMemberForm = $this->createAddMemberForm($boardMember, $board, $journal);
+        $addMemberForm = $this->createAddMemberForm($boardMember, $board);
 
         $token = $this
             ->get('security.csrf.token_manager')
@@ -234,7 +232,7 @@ class BoardController extends Controller
         if ($this->isGranted('EDIT', $journal, 'boards')) {
             $rowAction[] = $gridAction->deleteAction(
                 'ojs_journal_board_member_remove',
-                ['id', 'journalId' => $journal->getId(), 'boardId' => $board->getId()]
+                ['id', 'boardId' => $board->getId()]
             );
         }
         $actionColumn->setRowActions($rowAction);
@@ -256,10 +254,9 @@ class BoardController extends Controller
      *
      * @param BoardMember $entity
      * @param Board $board
-     * @param Journal $journal
      * @return Form
      */
-    private function createAddMemberForm(BoardMember $entity, Board $board, Journal $journal)
+    private function createAddMemberForm(BoardMember $entity, Board $board)
     {
         $form = $this->createForm(
             new BoardMemberType(),
@@ -267,7 +264,7 @@ class BoardController extends Controller
             array(
                 'action' => $this->generateUrl(
                     'ojs_journal_board_member_add',
-                    array('boardId' => $board->getId(), 'journalId' => $journal->getId())
+                    array('boardId' => $board->getId())
                 ),
                 'method' => 'PUT',
             )
@@ -316,7 +313,7 @@ class BoardController extends Controller
             array(
                 'action' => $this->generateUrl(
                     'ojs_journal_board_update',
-                    array('id' => $entity->getId(), 'journalId' => $entity->getJournal()->getId())
+                    array('id' => $entity->getId())
                 ),
                 'method' => 'PUT',
             )
@@ -363,7 +360,7 @@ class BoardController extends Controller
 
             return $this->redirectToRoute(
                 'ojs_journal_board_edit',
-                ['id' => $entity->getId(), 'journalId' => $journal->getId()]
+                ['id' => $entity->getId()]
             );
         }
 
@@ -416,7 +413,7 @@ class BoardController extends Controller
 
         $this->successFlashBag('successful.remove');
 
-        return $this->redirectToRoute('ojs_journal_board_index', ['journalId' => $journal->getId()]);
+        return $this->redirectToRoute('ojs_journal_board_index');
     }
 
     /**
@@ -435,7 +432,7 @@ class BoardController extends Controller
         $board = $em->getRepository('OjsJournalBundle:Board')->find($boardId);
 
         $boardMember = new BoardMember();
-        $addMemberForm = $this->createAddMemberForm($boardMember, $board, $journal);
+        $addMemberForm = $this->createAddMemberForm($boardMember, $board);
         $addMemberForm->handleRequest($request);
 
         if ($addMemberForm->isValid()) {
@@ -447,7 +444,7 @@ class BoardController extends Controller
 
         return $this->redirectToRoute(
             'ojs_journal_board_show',
-            ['id' => $board->getId(), 'journalId' => $journal->getId()]
+            ['id' => $board->getId()]
         );
     }
 
@@ -472,14 +469,14 @@ class BoardController extends Controller
 
         return $this->redirectToRoute(
             'ojs_journal_board_show',
-            ['id' => $boardId, 'journalId' => $journal->getId()]
+            ['id' => $boardId]
         );
     }
 
     /**
      * @return RedirectResponse
      */
-    public function otoGenerateAction(Request $request)
+    public function otoGenerateAction()
     {
         $journal = $this->get('ojs.journal_service')->getSelectedJournal();
         if (!$this->isGranted('EDIT', $journal, 'boards')) {
@@ -516,8 +513,6 @@ class BoardController extends Controller
         $em->flush();
 
         $this->successFlashBag('successfully.created');
-        return $this->redirectToRoute('ojs_journal_board_index', [
-            'journalId' => $journal->getId()
-        ]);
+        return $this->redirectToRoute('ojs_journal_board_index');
     }
 }

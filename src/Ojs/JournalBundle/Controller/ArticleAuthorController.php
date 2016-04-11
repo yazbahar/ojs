@@ -8,7 +8,6 @@ use Doctrine\ORM\QueryBuilder;
 use Ojs\CoreBundle\Controller\OjsController as Controller;
 use Ojs\JournalBundle\Entity\Article;
 use Ojs\JournalBundle\Entity\ArticleAuthor;
-use Ojs\JournalBundle\Entity\Journal;
 use Ojs\JournalBundle\Form\Type\ArticleAuthorType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -71,15 +70,15 @@ class ArticleAuthorController extends Controller
         $actionColumn = new ActionsColumn("actions", 'actions');
         $rowAction[] = $gridAction->showAction(
             'ojs_journal_article_author_show',
-            ['id', 'journalId' => $journal->getId(), 'articleId' => $articleId]
+            ['id', 'articleId' => $articleId]
         );
         $rowAction[] = $gridAction->editAction(
             'ojs_journal_article_author_edit',
-            ['id', 'journalId' => $journal->getId(), 'articleId' => $articleId]
+            ['id', 'articleId' => $articleId]
         );
         $rowAction[] = $gridAction->deleteAction(
             'ojs_journal_article_author_delete',
-            ['id', 'journalId' => $journal->getId(), 'articleId' => $articleId]
+            ['id', 'articleId' => $articleId]
         );
 
         $actionColumn->setRowActions($rowAction);
@@ -111,7 +110,7 @@ class ArticleAuthorController extends Controller
 
         $entity = new ArticleAuthor();
 
-        $form = $this->createCreateForm($entity, $journal, $article)
+        $form = $this->createCreateForm($entity, $article)
             ->add('create', 'submit', array('label' => 'c'));
 
         $form->handleRequest($request);
@@ -126,7 +125,7 @@ class ArticleAuthorController extends Controller
             return $this->redirect(
                 $this->generateUrl(
                     'ojs_journal_article_author_index',
-                    array('articleId' => $article->getId(), 'journalId' => $journal->getId())
+                    array('articleId' => $article->getId())
                 )
             );
         }
@@ -143,11 +142,10 @@ class ArticleAuthorController extends Controller
 
     /**
      * @param  ArticleAuthor $entity
-     * @param  Journal     $journal
      * @param  Article     $article
      * @return Form
      */
-    private function createCreateForm(ArticleAuthor $entity, Journal $journal, Article $article)
+    private function createCreateForm(ArticleAuthor $entity, Article $article)
     {
         $form = $this->createForm(
             new ArticleAuthorType(),
@@ -155,7 +153,7 @@ class ArticleAuthorController extends Controller
             array(
                 'action' => $this->generateUrl(
                     'ojs_journal_article_author_create',
-                    ['journalId' => $journal->getId(), 'articleId' => $article->getId()]
+                    ['articleId' => $article->getId()]
                 ),
                 'method' => 'POST',
             )
@@ -182,7 +180,7 @@ class ArticleAuthorController extends Controller
 
         $entity = new ArticleAuthor();
         $entity->setArticle($article);
-        $form = $this->createCreateForm($entity, $journal, $article)
+        $form = $this->createCreateForm($entity, $article)
             ->add('create', 'submit', array('label' => 'c'));
 
         return $this->render(
@@ -252,7 +250,7 @@ class ArticleAuthorController extends Controller
             throw new AccessDeniedException("You not authorized for this page!");
         }
 
-        $editForm = $this->createEditForm($articleAuthor, $journal, $article)
+        $editForm = $this->createEditForm($articleAuthor, $article)
             ->add('save', 'submit', array('label' => 'save'));
 
         $token = $this
@@ -273,11 +271,10 @@ class ArticleAuthorController extends Controller
      * Creates a form to edit a ArticleAuthor entity.
      *
      * @param  ArticleAuthor $entity  The entity
-     * @param  Journal     $journal
      * @param  Article     $article
      * @return Form        The form
      */
-    private function createEditForm(ArticleAuthor $entity, Journal $journal, Article $article)
+    private function createEditForm(ArticleAuthor $entity, Article $article)
     {
         $form = $this->createForm(
             new ArticleAuthorType(),
@@ -285,7 +282,7 @@ class ArticleAuthorController extends Controller
             array(
                 'action' => $this->generateUrl(
                     'ojs_journal_article_author_update',
-                    ['id' => $entity->getId(), 'journalId' => $journal->getId(), 'articleId' => $article->getId()]
+                    ['id' => $entity->getId(), 'articleId' => $article->getId()]
                 ),
                 'method' => 'PUT',
             )
@@ -317,7 +314,7 @@ class ArticleAuthorController extends Controller
             $this->throw404IfNotFound($articleAuthor);
         }
 
-        $editForm = $this->createEditForm($articleAuthor, $journal, $article)
+        $editForm = $this->createEditForm($articleAuthor, $article)
             ->add('save', 'submit', array('label' => 'save'));
         $editForm->handleRequest($request);
 
@@ -331,7 +328,6 @@ class ArticleAuthorController extends Controller
                     'ojs_journal_article_author_edit',
                     array(
                         'id' => $articleAuthor->getId(),
-                        'journalId' => $journal->getId(),
                         'articleId' => $article->getId(),
                     )
                 )
@@ -382,7 +378,7 @@ class ArticleAuthorController extends Controller
 
         return $this->redirectToRoute(
             'ojs_journal_article_author_index',
-            ['articleId' => $article->getId(), 'journalId' => $journal->getId()]
+            ['articleId' => $article->getId()]
         );
     }
 }

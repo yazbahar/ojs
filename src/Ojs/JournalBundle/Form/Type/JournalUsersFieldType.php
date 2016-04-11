@@ -2,7 +2,6 @@
 
 namespace Ojs\JournalBundle\Form\Type;
 
-use Ojs\JournalBundle\Service\JournalService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -14,20 +13,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class JournalUsersFieldType extends AbstractType
 {
     /**
-     * @var JournalService
-     */
-    private $journalService;
-
-    /**
-     * JournalUsersFieldType constructor.
-     * @param JournalService $journalService
-     */
-    public function __construct(JournalService $journalService)
-    {
-        $this->journalService = $journalService;
-    }
-
-    /**
      * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
@@ -35,7 +20,6 @@ class JournalUsersFieldType extends AbstractType
         $resolver->setDefaults(
             array(
                 'remote_route' => 'ojs_journal_user_search_based_journal',
-                'remote_params' => array('journalId' => $this->journalService->getSelectedJournal()->getId()),
                 'multiple' => true,
                 'class' => 'OjsUserBundle:User'
             )

@@ -45,9 +45,9 @@ class JournalSubmissionFileController extends Controller
 
         $actionColumn = new ActionsColumn("actions", 'actions');
 
-        $rowAction[] = $gridAction->showAction('ojs_journal_file_show', ['id', 'journalId' => $journal->getId()]);
-        $rowAction[] = $gridAction->editAction('ojs_journal_file_edit', ['id', 'journalId' => $journal->getId()]);
-        $rowAction[] = $gridAction->deleteAction('ojs_journal_file_delete', ['id', 'journalId' => $journal->getId()]);
+        $rowAction[] = $gridAction->showAction('ojs_journal_file_show', ['id']);
+        $rowAction[] = $gridAction->editAction('ojs_journal_file_edit', ['id']);
+        $rowAction[] = $gridAction->deleteAction('ojs_journal_file_delete', ['id']);
 
         $actionColumn->setRowActions($rowAction);
         $grid->addColumn($actionColumn);
@@ -74,7 +74,7 @@ class JournalSubmissionFileController extends Controller
             throw new AccessDeniedException("You are not authorized for view this page!");
         }
         $entity = new JournalSubmissionFile();
-        $form = $this->createCreateForm($entity, $journal->getId());
+        $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -99,7 +99,7 @@ class JournalSubmissionFileController extends Controller
             return $this->redirect(
                 $this->generateUrl(
                     'ojs_journal_file_show',
-                    array('id' => $entity->getId(), 'journalId' => $journal->getId())
+                    array('id' => $entity->getId())
                 )
             );
         }
@@ -115,10 +115,9 @@ class JournalSubmissionFileController extends Controller
 
     /**
      * @param  JournalSubmissionFile        $entity
-     * @param $journalId
      * @return \Symfony\Component\Form\Form
      */
-    private function createCreateForm(JournalSubmissionFile $entity, $journalId)
+    private function createCreateForm(JournalSubmissionFile $entity)
     {
         $languages = [];
         if (is_array($this->container->getParameter('languages'))) {
@@ -132,7 +131,7 @@ class JournalSubmissionFileController extends Controller
             new JournalSubmissionFileType(),
             $entity,
             array(
-                'action' => $this->generateUrl('ojs_journal_file_create', ['journalId' => $journalId]),
+                'action' => $this->generateUrl('ojs_journal_file_create'),
                 'languages' => $languages,
                 'method' => 'POST',
             )
@@ -155,7 +154,7 @@ class JournalSubmissionFileController extends Controller
             throw new AccessDeniedException("You are not authorized for view this page!");
         }
         $entity = new JournalSubmissionFile();
-        $form = $this->createCreateForm($entity, $journal->getId());
+        $form = $this->createCreateForm($entity);
 
         return $this->render(
             'OjsJournalBundle:SubmissionFile:new.html.twig',
@@ -240,7 +239,7 @@ class JournalSubmissionFileController extends Controller
             array(
                 'action' => $this->generateUrl(
                     'ojs_journal_file_update',
-                    array('id' => $entity->getId(), 'journalId' => $entity->getJournal()->getId())
+                    array('id' => $entity->getId())
                 ),
                 'languages' => $languages,
                 'method' => 'PUT',
@@ -290,7 +289,7 @@ class JournalSubmissionFileController extends Controller
             return $this->redirect(
                 $this->generateUrl(
                     'ojs_journal_file_edit',
-                    array('id' => $entity->getId(), 'journalId' => $journal->getId())
+                    array('id' => $entity->getId())
                 )
             );
         }
@@ -342,6 +341,6 @@ class JournalSubmissionFileController extends Controller
 
         $this->successFlashBag('successful.remove');
 
-        return $this->redirectToRoute('ojs_journal_file_index', ['journalId' => $journal->getId()]);
+        return $this->redirectToRoute('ojs_journal_file_index');
     }
 }
